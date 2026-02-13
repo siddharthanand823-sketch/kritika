@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You ❤️</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container full-height">
+        <div class="card center-content" id="mainCard">
+            <img id="mainImage" src="https://media.tenor.com/K2SG9Z7R-rMAAAAj/cute-love.gif" class="gif-img" style="margin-bottom: 15px; width: 150px; border-radius: 10px;">
+            
+            <h1 id="displayQuestion">Will you be my Valentine?</h1>
+            
+            <div class="buttons" style="margin-top: 20px;">
+                <button id="yesBtn" class="btn-yes">YES! 😍</button>
+                <button id="noBtn" class="btn-no">No 😢</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const fromName = params.get('from') || 'Admirer';
+        const toName = params.get('to') || 'You';
+        const mode = params.get('mode') || 'playful';
+
+        const question = document.getElementById('displayQuestion');
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mainImage = document.getElementById('mainImage');
+        const card = document.getElementById('mainCard');
+
+        question.innerHTML = `Hey <b>${toName}</b>, will you be my Valentine?`;
+
+        // --- PAGE START (GIFs) ---
+        if (mode === 'romantic') {
+            mainImage.src = "https://media.tenor.com/71w3v2GgJcIAAAAj/cat-love.gif"; 
+            document.body.style.background = "#ffe6e6"; 
+        } else if (mode === 'elegant') {
+            mainImage.src = "https://media.tenor.com/b6wZgXNqCgMAAAAj/rose-flower.gif";
+            document.body.style.background = "#f1f2f6";
+            card.style.fontFamily = "Georgia, serif";
+            yesBtn.innerText = "Yes"; 
+            noBtn.innerText = "No";   
+        }
+
+        // --- NO BUTTON ---
+        if (mode === 'playful') {
+            function moveBtn() {
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = `${x}px`;
+                noBtn.style.top = `${y}px`;
+            }
+            noBtn.addEventListener('mouseover', moveBtn);
+            noBtn.addEventListener('click', moveBtn);
+        } else if (mode === 'romantic') {
+            noBtn.addEventListener('click', () => {
+                card.innerHTML = `
+                    <img src="https://media.tenor.com/fq_8CIk8kMUAAAAj/sad-cat.gif" style="width:150px; border-radius:10px; margin-bottom:15px;">
+                    <h2 style="color:#d63031; margin:0;">That's okay...</h2>
+                    <p style="font-size:18px; margin-top:10px;"><b>${fromName}</b> will be waiting with hope 💕</p>
+                `;
+            });
+        } else if (mode === 'elegant') {
+            noBtn.addEventListener('click', () => {
+                card.innerHTML = `
+                    <img src="https://media.tenor.com/S-8Wn-q2tO8AAAAj/sad-rose.gif" style="width:150px; border-radius:10px; margin-bottom:15px;">
+                    <h2 style="color:#636e72; margin:0;">Understood.</h2>
+                    <p style="font-size:18px; margin-top:10px;"><b>${fromName}</b> appreciates your honesty.</p>
+                `;
+            });
+        }
+
+        // --- YES BUTTON ---
+        yesBtn.addEventListener('click', () => {
+            fetch('/log-response', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ from: fromName, to: toName, mode: mode, answer: 'YES' })
+            }).catch(e => console.log(e));
+
+            if (mode === 'playful') {
+                card.innerHTML = `
+                    <img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" style="width:150px; border-radius:10px; margin-bottom:15px;">
+                    <h1>YAYYY! 🎉</h1>
+                    <h2>Party time, ${fromName}! 🥳</h2>
+                `;
+            } else if (mode === 'romantic') {
+                card.innerHTML = `
+                    <img src="https://media.tenor.com/5mY0_O3TzBoAAAAi/mochi-cat.gif" style="width:150px; border-radius:10px; margin-bottom:15px;">
+                    <h1 style="color:#e84393; margin:0;">Thank you! 💕</h1>
+                    <p style="font-size:18px; margin-top:10px;"><b>${fromName}'s</b> heart is full of joy!</p>
+                `;
+            } else if (mode === 'elegant') {
+                card.innerHTML = `
+                    <img src="https://media.tenor.com/k7j4eQy440UAAAAj/cheers-toast.gif" style="width:150px; border-radius:10px; margin-bottom:15px;">
+                    <h1 style="color:#2d3436; margin:0;">Thank you.</h1>
+                    <p style="font-size:18px; margin-top:10px;"><b>${fromName}</b> will be notified of your response.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
